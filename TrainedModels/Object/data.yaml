@@ -1,0 +1,8 @@
+names:
+- Schenk
+- Sign
+nc: 2
+path: .\datasets\YoloFormat\FirstBolidenYolo3
+test: test
+train: train
+val: val
