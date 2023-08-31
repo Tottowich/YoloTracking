@@ -1,6 +1,31 @@
-# Live-Yolo
-Detection algorithm with utilizes both tracking and validation to make accurate predictions.
-## Input arguments:
+# Live-YOLO 🚀
+Welcome to Live-YOLO! This is a real-time object and digit detection and tracking application using YOLO (You Only Look Once). The application can take input from a webcam or a video file and performs object and digit detection, tracking, and optional visualization and transmission of the results. The repository also contains an algorithm for validating the sequential digits both individually and as a sequence versus a database of valid combinations.
+
+## Introduction 📚
+This repository contains code for a live object and digit detection and tracking application using YOLO (You Only Look Once). The application is designed to be flexible and easy to use, with several options for customization. You can enable or disable tracking and visualization, adjust the confidence and IoU thresholds, and choose the class of objects to track. The application also includes options for logging and transmitting the results.
+
+The application is built on top of the [yolov8](https://github.com/ultralytics/ultralytics) repository by Ultralytics. YOLOv8 is a state-of-the-art object detection model that is fast and accurate, making it suitable for real-time applications. This repository extends the functionality of YOLOv8 by adding digit detection and tracking, and providing a user-friendly interface for running the application on a webcam or video file.
+
+## Installation 💻
+To install and set up the repository, follow these steps:
+1. Clone the repository:
+```
+git clone https://github.com/Tottowich/YoloTracking.git
+```
+2. Install the required dependencies:
+```
+pip install -r requirements.txt
+```
+3. (Optional) Download the pretrained models and place them in the `TrainedModels` folder.
+
+## Usage 🚀
+To run the application, use the `live_yolo.py` script. Here is an example command:
+```
+python live_yolo.py --webcam "0" --track --track_digits --visualize --time 60 --disp_pred --object_frames 10 --class_to_track 1 --verbose
+```
+For a detailed explanation of the input arguments, see the Input arguments section below.
+
+## Input Arguments 🛠️
 <details style="font-size: 16px;">
 <summary> Object detection </summary>
 <br>
@@ -91,7 +116,6 @@ Detection algorithm with utilizes both tracking and validation to make accurate 
 <br>
 </details>
 
-
 <details style="font-size: 16px;">
 <summary> General </summary>
 <br>
@@ -113,3 +137,7 @@ Detection algorithm with utilizes both tracking and validation to make accurate 
 ```bash
 python live_yolo.py --webcam "0" --track --track_digits --visualize --time 60 --disp_pred --object_frames 10 --class_to_track 1 --verbose
 ```
+
+## Contributing 🤝
+Contributions are welcome! Please follow the coding style of the existing code and submit a pull request with your changes. If you are adding a new feature or fixing a bug, please include tests for your changes.
+
