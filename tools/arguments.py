@@ -25,7 +25,7 @@ def parse_config():
     parser.add_argument('--ip', type=str, default=None, help='ip address')
     parser.add_argument('--port', type=int, default=None, help='port')
 
-    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=448, help='inference size h,w')
+    parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=416, help='inference size h,w')
     parser.add_argument('--data', type=str, default=ROOT / "./TrainedModels/Object/data.yaml", help='(optional) dataset.yaml path')
     parser.add_argument('--max_det', type=int, default=10, help='maximum detections per image')
     parser.add_argument('--conf_thres', type=float, default=0.6, help='confidence threshold')
@@ -56,7 +56,7 @@ def parse_config():
     parser.add_argument("--out_thresh",type=float,default=0.35,help="Output threshold if the average score of the sequence of sequences is below this threshold then the sequence history is invalid")
     parser.add_argument("--verbose",action="store_true",help="Whether to print information")
     parser.add_argument('--data_digit', type=str, default='./TrainedModels/Digit/data.yaml', help='(optional) dataset.yaml path to digit dataset.')
-    parser.add_argument('--imgsz_digit', nargs='+', type=int, default=448, help='inference size h,w')
+    parser.add_argument('--imgsz_digit', nargs='+', type=int, default=416, help='inference size h,w')
     parser.add_argument('--combination_file', type=str, default='./TrainedModels/data/combinations.txt', help='(optional) combination.txt path text file with currently valid digit combinations.')
     parser.add_argument('--time', type=int, default=-1
     , help='specify the time to stream data from a sensor')

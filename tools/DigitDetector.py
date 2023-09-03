@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 import time
-from utils import visualize_yolo_2D,numpy_to_tuple, ROOT
+from tools.utils import visualize_yolo_2D,numpy_to_tuple, ROOT
 from ultralytics.yolo.data.augment import LetterBox
 class DigitPrediction:
     """
@@ -266,6 +266,10 @@ class DigitPredictionTracker:
         Returns:
             None
         """
+        if _list_of_combinations is None:
+            if self.verbose:
+                self.logger.info("No list of combinations provided. All sequences will be considered valid.")
+            return []
         list_of_combinations = []
         if self.verbose:
             self.logger.info("Getting list of combinations...")
@@ -333,14 +337,14 @@ class DigitPredictionTracker:
                 self.logger.warning("Sequence is empty. Skipping...")
             return False
         # Check if sequence is in list of combinations:
-        
-        if sequence.str_seq not in self.list_of_combinations or not len(sequence):
-            if self.verbose:
-                self.logger.warning(f"Sequence: {sequence}, string: {sequence.str_seq} not in list of combinations.")
-            valid = False# Must be valid sequence
+        if self.list_of_combinations:
+            if sequence.str_seq not in self.list_of_combinations or not len(sequence):
+                if self.verbose:
+                    self.logger.warning(f"Sequence: {sequence}, string: {sequence.str_seq} not in list of combinations.")
+                valid = False# Must be valid sequence
         
         # Check if sequence is already in history must be the same sequence accross time:
-        if sequence.int_seq not in [seq.int_seq for seq in self.history] and len(self.history)>0: # Check if not matching history sequence or if history is empty
+        if len(self.history)>0 and (sequence.int_seq != self.history[-1].int_seq): # Check if not matching history sequence or if history is empty
             if self.verbose:
                 self.logger.warning(f"Sequence: {sequence} did not match history.")
             self.reset() # Must be valid sequence accross time. Resetting such that the sequence could be added if it is valid given the certainy thresholds.
@@ -418,11 +422,12 @@ class DigitPredictionTracker:
         valid = self.validate_sequence(current_sequence)
         if not valid:
             self.reset()
-            return current_sequence,valid # Sequence is not valid.
+            return current_sequence, valid # Sequence is not valid.
         # If the average score of the history exceeds the threshold, we have an output sequence.
         # This means that the sequence must be valid over time. 
         # Criteria can be changed under validate_sequence for individual sequence added to history.
         # Criteria can be changed under validate_history for the history to be considered a valid output sequence.
+
         self.add_sequence(current_sequence)
         if len(self.history) > self.frames_to_track:
             self.history.pop(0)

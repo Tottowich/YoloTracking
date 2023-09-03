@@ -1,4 +1,4 @@
-from utils import get_cut_out
+from tools.utils import get_cut_out
 import torch
 import time
 import numpy as np
@@ -124,10 +124,6 @@ class RegionPredictionsTracker:
             image_selected = largest_attributes["image"]
             self.scores.append(score_best)
             self.images.append(image_selected)
-            # if largest_attributes["class"]!=self.previous_tracked_class: # Reset the list if no prediction is made
-            #     # print(f"Resetting the list, wrong class largest.")
-            #     self.reset()
-            #     self.previous_tracked_class = largest_attributes["class"]
         else:
             if self.verbose:
                 self.logger.info("No prediction made.")
@@ -139,7 +135,6 @@ class RegionPredictionsTracker:
         if len(self.scores)>=self.frames_to_track: # If the sequence is long enough evaluate 
             combined_score, best_index = self.evaluate()
             if combined_score>=self.threshold:# and combined_score>=self.best_score: # If the combined score is above the threshold and is better than the previous best score
-                # print(f"Combined score: {combined_score}")
                 if self.verbose:
                     self.logger.info(f"Combined object score over time {Fore.GREEN}above{Style.RESET_ALL}: {combined_score:.3f}/{self.threshold:.3f}")
                 best_frame["score"] = combined_score

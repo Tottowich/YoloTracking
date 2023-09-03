@@ -35,6 +35,7 @@ from ultralytics.yolo.utils.torch_utils import select_device, time_sync
 from tools.StreamLoader import LoadImages, LoadStreams
 from tools.transmitter import Transmitter
 
+
 # FALLBACK LIST OF POSSIBLE COMBINATIONS IF FILE WITH COMBINATIONS IS NOT PROVIDED
 LIST_OF_COMB = ["082","095","1204","1206","1308","1404","1405","1407","1408","1501","1503","1505","1506",
                 "1508","1509","1510","1511","1516","1601","161","1602","162","163","164","1605","165","1606",
@@ -98,6 +99,7 @@ def wait_for_input(live:Union[LoadImages,LoadStreams],args:argparse.Namespace)->
             else:
                 continue
             wait = False
+
 def visualize_yolo_2D(pred:np.ndarray,
                     img0:np.ndarray,
                     args:argparse=None,
@@ -171,7 +173,8 @@ from ultralytics.yolo.engine.results import Results
 
 
 def visualize_new(pred:Results, img0:np.ndarray=None,image_name:str="Object Predictions")->None:
-    plot = pred.plot(img_gpu=img0)[0].transpose(1,2,0)
+    # plot = pred.plot(img=img0)[0].transpose(1,2,0)
+    plot = pred.plot()[0].transpose(1,2,0)
     assert isinstance(plot,np.ndarray), f"plot must be a np.ndarray, got {type(plot)}"
     cv2.imshow(image_name,cv2.cvtColor(plot,cv2.COLOR_RGB2BGR))
     cv2.waitKey(1)
@@ -358,6 +361,7 @@ def create_logging_dir(run_name:str,log_dir:str,args)->str:
     with open(os.path.join(log_dir, 'args.yaml'), 'w') as f:
         yaml.dump(args, f)
     return log_dir
+
 def scale_preds(preds:list[Union[torch.Tensor,np.ndarray]],img0:np.ndarray,img:torch.Tensor,filter:bool=False,classes_to_keep:list[int]=None)->np.ndarray:
     """
     Scale the predictions.
@@ -418,21 +422,33 @@ def increase_contrast(img:np.ndarray)->np.ndarray:
     img = cv2.cvtColor(img,cv2.COLOR_GRAY2RGB)
     return img
 
+def read_yaml(path:Union[str,Path]):
+    """Read yaml file"""
+    if isinstance(path, str):
+        path = Path(path)
+    with open(path,"r") as f:
+        return yaml.safe_load(f)
 
-def initialize_yolo_model(args, data):
+def initialize_yolo_model(data, device, half, weights, imgsz):
     """
     Initialize YOLO model.
     Args:
-        args: Arguments specified under tools/arguments.py using parse_config()
+        data: Data from the data file.
+        device: Device to run the model on.
+        half: Half precision.
+        weights: Weights of the model.
+        imgsz: Image size.
     Returns:
         YOLO model.
     """
-    device = select_device(args.device)
-    half = args.half if device.type != 'cpu' else False  # half precision only supported on CUDA
-    model = YOLO(args.weights, task='detect')
-    names = data["object"]["names"]
-    imgsz = (args.imgsz, args.imgsz) if isinstance(args.imgsz, int) else args.imgsz  # tuple
-    return model,imgsz,names
+    device = select_device(device)
+    # Read names from data file.
+    data_yaml = read_yaml(data["data"])
+    names = data_yaml["names"]
+    half = half if device.type != 'cpu' else False  # half precision only supported on CUDA
+    model = YOLO(weights, task='detect')
+    imgsz = (imgsz, imgsz) if isinstance(imgsz, int) else imgsz  # tuple
+    return model,imgsz,names, device
 
 def initialize_network(args, data):
     """
@@ -442,12 +458,7 @@ def initialize_network(args, data):
     Args:
         args: Arguments from the command line. Specified by arguments.parse_config().
     """
-    device = select_device(args.device)
-    half = args.half if device.type != 'cpu' else False  # half precision only supported on CUDA
-    model = YOLO(args.weights, task='detect')
-    names = data["object"]["names"]
-    imgsz = (args.imgsz, args.imgsz) if isinstance(args.imgsz, int) else args.imgsz  # tuple
-    example_img = torch.zeros((1, 3, *imgsz), device=device)  # init img
+    model, imgsz, names, device = initialize_yolo_model(data["object"], args.device, args.half, args.weights, args.imgsz)
     # flop_counter(model, example_img) # REMOVED
     # Create file to save logs to.
     if args.save_time_log:
@@ -480,7 +491,7 @@ def initialize_network(args, data):
         # transmitter = Transmitter(reciever_ip=args.ip, reciever_port=args.port)
         # transmitter.start_transmit_udp()
         # transmitter.start_transmit_ml()
-        raise NotImplementedError("Transmitter not implemented yet.")
+        raise NotImplementedError("Transmitter not implemented yet. TODO: Implement the format the data is transmitted in. (see transmitter.py, send_data() function)")
     else:
         transmitter = None
     if args.log_time:
@@ -520,11 +531,7 @@ def initialize_digit_model(args,data,logger=None):
     Args:
         args: Arguments from the command line.
     """
-    device = select_device(args.device)
-    half   = args.half if device.type != 'cpu' else False  # half precision only supported on CUDA
-    model  = YOLO(args.weights_digits, task='detect')
-    names  = data["digit"]["names"]
-    imgsz   = (args.imgsz_digit, args.imgsz_digit) if isinstance(args.imgsz_digit, int) else args.imgsz_digit  # tuple
+    model, imgsz, names, device = initialize_yolo_model(data["digit"], args.device, args.half, args.weights_digits, args.imgsz_digit)
     # flop_counter(model, example_img)
     
     from DigitDetector import DigitDetector  # Import here to avoid circular import.
@@ -539,11 +546,10 @@ def initialize_digit_model(args,data,logger=None):
                         ind_threshold=args.ind_thresh,
                         seq_threshold=args.seq_thresh,
                         output_threshold=args.out_thresh,
-                        # TODO: Make this a command line argument with path to file containing the valid combinations. (CSV or JSON) This might be redundant if we have a good enough model, further testing is required!
-                        list_of_combinations=args.combination_file if args.combination_file is not None else LIST_OF_COMB, # TODO: Add the list of combinations to be tracked as read from a file.
-                        visualize=args.visualize,
+                        list_of_combinations=args.combination_file,
                         wait=args.wait,)
     return dd, names
+
 class ProgBar(tqdm):
     def __init__(self, is_live:bool=False,duration:Union[float,int]=-1,*args, **kwargs):
         super().__init__(*args, **kwargs,total=duration)

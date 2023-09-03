@@ -1,10 +1,10 @@
-# Live-YOLO 🚀
-Welcome to Live-YOLO! This is a real-time object and digit detection and tracking application using YOLO (You Only Look Once). The application can take input from a webcam or a video file and performs object and digit detection, tracking, and optional visualization and transmission of the results. The repository also contains an algorithm for validating the sequential digits both individually and as a sequence versus a database of valid combinations.
+# YoloDetection 🚀
+Welcome to YoloDetection! This is a real-time object and digit detection and verification application using YOLO (You Only Look Once). The application can take input from a webcam or a video file and performs object and digit detection, verification, and optional visualization and transmission of the results. The repository also contains an algorithm for validating the sequential digits both individually and as a sequence versus a database of valid combinations. 
 
 ## Introduction 📚
-This repository contains code for a live object and digit detection and tracking application using YOLO (You Only Look Once). The application is designed to be flexible and easy to use, with several options for customization. You can enable or disable tracking and visualization, adjust the confidence and IoU thresholds, and choose the class of objects to track. The application also includes options for logging and transmitting the results.
+This repository contains code for a live object and digit detection and verification application using YOLO (You Only Look Once). The application is designed to be flexible and easy to use, with several options for customization. You can enable or disable verification and visualization, adjust the confidence and IoU thresholds, and choose the class of objects to track. The application also includes options for logging and transmitting the results.
 
-The application is built on top of the [yolov8](https://github.com/ultralytics/ultralytics) repository by Ultralytics. YOLOv8 is a state-of-the-art object detection model that is fast and accurate, making it suitable for real-time applications. This repository extends the functionality of YOLOv8 by adding digit detection and tracking, and providing a user-friendly interface for running the application on a webcam or video file.
+The application is built on top of the [yolov8](https://github.com/ultralytics/ultralytics) repository by Ultralytics. YOLOv8 is a state-of-the-art object detection model that is fast and accurate, making it suitable for real-time applications. This repository extends the functionality of YOLOv8 by adding digit sequence detection and verification, and providing a user-friendly interface for running the application on a webcam or video file.
 
 ## Installation 💻
 To install and set up the repository, follow these steps:
@@ -122,8 +122,8 @@ For a detailed explanation of the input arguments, see the Input arguments secti
 
 | Argument | Type | Default | Description | Example |
 | --- | --- | --- | --- | --- |
-|--ip|str|None|IP address.|--ip 192.168.0.1|
-|--port|int|None|Port number.|--port 8080|
+|--ip|str|None|IP address to transmit to.|--ip 192.168.0.1|
+|--port|int|None|Port number to transmit to.|--port 8080|
 |--name_run|str|randomly generated names|Name of the run to save the results.|--name_run my_run|
 |--transmit|action: BooleanOptionalAction||Transmit data.|--transmit|
 |--webcam|str||Use webcam as input. Which webcam to use.|--webcam "1"|
