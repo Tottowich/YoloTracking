@@ -19,9 +19,9 @@ pip install -r requirements.txt
 3. (Optional) Download the pretrained models and place them in the `TrainedModels` folder.
 
 ## Usage 🚀
-To run the application, use the `live_yolo.py` script. Here is an example command:
+To run the application, use the `sequence_verification.py` script. Here is an example command:
 ```
-python live_yolo.py --webcam "0" --track --track_digits --visualize --time 60 --disp_pred --object_frames 10 --class_to_track 1 --verbose
+python sequence_verification.py --webcam "0" --track --track_digits --visualize --time 60 --disp_pred --object_frames 10 --class_to_track 1 --verbose
 ```
 For a detailed explanation of the input arguments, see the Input arguments section below.
 
@@ -135,7 +135,7 @@ For a detailed explanation of the input arguments, see the Input arguments secti
 
 ### Example usage:
 ```bash
-python live_yolo.py --webcam "0" --track --track_digits --visualize --time 60 --disp_pred --object_frames 10 --class_to_track 1 --verbose
+python sequence_verification.py --webcam "0" --track --track_digits --visualize --time 60 --disp_pred --object_frames 10 --class_to_track 1 --verbose
 ```
 
 ## Contributing 🤝
