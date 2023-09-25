@@ -11,4 +11,4 @@ Requests==2.31.0
 thop==0.1.1.post2209072238
 torch==2.0.1
 tqdm==4.65.0
-ultralytics==8.0.116
+ultralytics==8.0.186
